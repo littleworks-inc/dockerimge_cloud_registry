@@ -69,6 +69,7 @@ jobs:
       - name: AWS Build & push Docker image
         uses: docker/build-push-action@v5
         with:
+          provenance: false
           context: aws/
           push: true
           tags: ${{ steps.metadata.outputs.tags }}
