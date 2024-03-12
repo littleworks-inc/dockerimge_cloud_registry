@@ -80,8 +80,8 @@ jobs:
         id: docker-scan
         uses: alexjurkiewicz/ecr-scan-image@v1.7.1
         with:
-          repository: myorg/myimage
-          tag: ${{ steps.docker-build.outputs.tag }}
+          repository: ${{ steps.docker-build.outputs.tag }}
+          tag: ${{ steps.docker-build.outputs.labels }}
           # fail_threshold: medium
           # ignore_list: |
           #   CVE-2014-7654321
