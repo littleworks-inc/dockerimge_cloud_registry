@@ -49,11 +49,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
-      # - name: Login to ECR
-      #   uses: docker/login-action@v3
-      #   with:
-      #     registry: 168237387713.dkr.ecr.ca-central-1.amazonaws.com
-
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
@@ -71,6 +66,7 @@ jobs:
             type=sha,prefix=,suffix=,format=short
 
       - name: AWS Build & push Docker image
+        id: docker-build
         uses: docker/build-push-action@v5
         with:
           provenance: false
@@ -80,4 +76,16 @@ jobs:
           labels: ${{ steps.metadata.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: Scan Docker image
+        id: docker-scan
+        uses: alexjurkiewicz/ecr-scan-image@v1.7.1
+        with:
+          repository: myorg/myimage
+          tag: ${{ steps.docker-build.outputs.tag }}
+          # fail_threshold: medium
+          # ignore_list: |
+          #   CVE-2014-7654321
+          #   CVE-2014-456132
+      # Access scan results in later steps
+      - run: echo "${{ steps.docker-scan.outputs.total }} total vulnerabilities."
 
