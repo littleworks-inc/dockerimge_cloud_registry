@@ -86,16 +86,14 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           provenance: false
-      - name: Scan Docker image
-        id: docker-scan
-        uses: alexjurkiewicz/ecr-scan-image@v1.7.1
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
         with:
-          repository: ${{ steps.login-ecr.outputs.registry }}
-          tag: ${{ steps.sha_short.outputs.sha_short }}
-          # fail_threshold: medium
-          # ignore_list: |
-          #   CVE-2014-7654321
-          #   CVE-2014-456132
-      # Access scan results in later steps
+          image-ref: '${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ steps.sha_short.outputs.sha_short }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
       - run: echo "${{ steps.docker-scan.outputs.total }} total vulnerabilities."
 
