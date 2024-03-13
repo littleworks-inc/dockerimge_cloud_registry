@@ -95,6 +95,4 @@ jobs:
           exit-code: '0'
           ignore-unfixed: true
           vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-      - run: echo "${{ steps.docker-scan.outputs.total }} total vulnerabilities."
-
+          severity: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
