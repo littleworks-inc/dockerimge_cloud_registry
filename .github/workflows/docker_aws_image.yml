@@ -5,7 +5,7 @@ on:
       - '*'
 
 env:
-    REGISTRY: aws_cli
+    REGISTRY: 168237387713.dkr.ecr.ca-central-1.amazonaws.com
     IMAGE_NAME: aws_cli
     COMPARE_TAG: latest
     SHA: ${{ github.event.after }}
@@ -80,9 +80,11 @@ jobs:
         run: |
           echo "Docker Image: $IMAGE_NAME"
           echo "Docker Tag: $TAG"
+          echo "$Labels"
         env:
           IMAGE_NAME: ${{ steps.metadata.outputs.images }}
           TAG: ${{ steps.metadata.outputs.tags }}
+          Labels: ${{ steps.metadata.outputs.labels }}
 
       - name: Scan Docker image
         id: docker-scan
