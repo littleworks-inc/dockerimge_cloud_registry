@@ -76,6 +76,14 @@ jobs:
           labels: ${{ steps.metadata.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: Print Image and Tag
+        run: |
+          echo "Docker Image: $IMAGE_NAME"
+          echo "Docker Tag: $TAG"
+        env:
+          IMAGE_NAME: ${{ steps.metadata.outputs.images }}
+          TAG: ${{ steps.metadata.outputs.tags }}
+
       - name: Scan Docker image
         id: docker-scan
         uses: alexjurkiewicz/ecr-scan-image@v1.7.1
