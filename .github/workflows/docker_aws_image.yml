@@ -65,33 +65,26 @@ jobs:
             type=semver,pattern=v{{version}}
             type=sha,prefix=,suffix=,format=short
 
-      - name: AWS Build & push Docker image
-        id: docker-build
-        uses: docker/build-push-action@v5
-        with:
-          provenance: false
-          context: aws/
-          push: true
-          tags: ${{ steps.metadata.outputs.tags }}
-          labels: ${{ steps.metadata.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-      - name: Print Image and Tag
-        run: |
-          echo "Docker Image: $IMAGE_NAME"
-          echo "Docker Tag: $TAG"
-          echo "$Labels"
-        env:
-          IMAGE_NAME: ${{ steps.metadata.outputs.images }}
-          TAG: ${{ steps.metadata.outputs.tags }}
-          Labels: ${{ steps.metadata.outputs.labels }}
+      - name: Set short sha
+        id: sha_short
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ steps.sha_short.outputs.sha_short }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          provenance: false
       - name: Scan Docker image
         id: docker-scan
         uses: alexjurkiewicz/ecr-scan-image@v1.7.1
         with:
-          repository: ${{ steps.metadata.outputs.images }}
-          tag: ${{ steps.metadata.outputs.tags }}
+          repository: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}
+          tag: ${{ steps.sha_short.outputs.sha_short }}
           # fail_threshold: medium
           # ignore_list: |
           #   CVE-2014-7654321
