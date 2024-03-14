@@ -61,7 +61,7 @@ jobs:
       - name: Set up Google Cloud authentication
         uses: google-github-actions/auth@v2
         with:
-          service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
+          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
           project_id: nomadic-rush-408023
 
       - name: Set short sha
