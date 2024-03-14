@@ -5,7 +5,6 @@ on:
       - '*'
 
 env:
-    artifacts: northamerica-northeast2-docker.pkg.dev
     PROJECT_ID: nomadic-rush-408023
     REGESTRY_name: gcpcli
     IMAGE_NAME: gcpcli
