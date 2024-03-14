@@ -1,4 +1,4 @@
-name: AWS Build and publish a Docker image
+name: GCPS Build and publish a Docker image
 on:
   push:
     branches:
