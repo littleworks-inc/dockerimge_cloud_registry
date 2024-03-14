@@ -5,7 +5,7 @@ on:
       - '*'
 
 env:
-    REGISTRY: northamerica-northeast2-docker.pkg.dev/nomadic-rush-408023/gcpcli
+    REGISTRY: northamerica-northeast2-docker.pkg.dev/nomadic-rush-408023/gcpcli/gcpcli
     PROJECT_ID: nomadic-rush-408023
     IMAGE_NAME: gcpcli
     REGION: northamerica-northeast2
