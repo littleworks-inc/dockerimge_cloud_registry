@@ -50,42 +50,42 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      # - name: Login to GCR
-      #   id: login-gcr
-      #   uses: docker/login-action@v3
-      #   with:
-      #     registry: northamerica-northeast2-docker.pkg.dev
-      #     username: _json_key
-      #     password: ${{ secrets.GOOGLE_CREDENTIALS }}
-
-      - name: Set up Google Cloud authentication
-        uses: google-github-actions/auth@v2
+      - name: Login to GCR
+        id: login-gcr
+        uses: docker/login-action@v3
         with:
-          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
-          project_id: nomadic-rush-408023
+          registry: northamerica-northeast2-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      # - name: Set up Google Cloud authentication
+      #   uses: google-github-actions/auth@v2
+      #   with:
+      #     credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+      #     project_id: nomadic-rush-408023
 
       - name: Set short sha
         id: sha_short
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      # - name: Build and push
-      #   uses: docker/build-push-action@v4
-      #   with:
-      #     context: gcp/
-      #     push: true
-      #     tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.sha_short.outputs.sha_short }}
-      #     cache-from: type=local,src=/tmp/.buildx-cache
-      #     cache-to: type=local,dest=/tmp/.buildx-cache
-      #     provenance: false
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: gcp/
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.sha_short.outputs.sha_short }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          provenance: false
 
-      - name: Login to Docker
-        run: echo $DOCKER_PASSWORD | docker login -u _json_key --password-stdin --username https://gcr.io
+      # - name: Login to Docker
+      #   run: echo $DOCKER_PASSWORD | docker login -u _json_key --password-stdin --username https://gcr.io
 
-      - name: Build the Docker image
-        run: docker build -t gcr.io/$PROJECT_ID/$IMAGE_NAME:${{ steps.sha_short.outputs.sha_short }} .
+      # - name: Build the Docker image
+      #   run: docker build -t gcr.io/$PROJECT_ID/$IMAGE_NAME:${{ steps.sha_short.outputs.sha_short }} .
 
-      - name: Push the Docker image to GCR
-        run: docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:${{ steps.sha_short.outputs.sha_short }}
+      # - name: Push the Docker image to GCR
+      #   run: docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:${{ steps.sha_short.outputs.sha_short }}
 
       - name: Run Trivy vulnerability scanner
         id: docker-scan
