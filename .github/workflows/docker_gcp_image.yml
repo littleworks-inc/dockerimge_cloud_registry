@@ -99,7 +99,7 @@ jobs:
 
       - name: Build image
         run: docker build . --file "gcp/Dockerfile" --tag ${{ env.REGISTRY }}
-        working-directory: WORKING_DIRECTORY
+        # working-directory: WORKING_DIRECTORY
 
       - name: Push image
         run: docker push ${{ env.REGISTRY }}
