@@ -11,7 +11,7 @@ env:
     SHA: ${{ github.event.after }}
 jobs:
   build:
-    name: GCPS Build & push docker image
+    name: GCP Build & push docker image
     runs-on: ubuntu-latest
 
     steps:
@@ -68,15 +68,23 @@ jobs:
         id: sha_short
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - name: Build and push
-        uses: docker/build-push-action@v4
-        with:
-          context: gcp/
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.sha_short.outputs.sha_short }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-          provenance: false
+      - name: Build and push Docker
+        run: |
+          gcloud auth login --brief --cred-file="${{ steps.login-gcr.outputs.credentials_file_path }}"
+          cd docker_test
+          docker build -t northamerica-northeast1-docker.pkg.dev/prj-d-perso-fleroux-4094/fleroux-docker/hello:latest .
+          docker image push northamerica-northeast1-docker.pkg.dev/prj-d-perso-fleroux-4094/fleroux-docker/hello
+        shell: bash
+
+      # - name: Build and push
+      #   uses: docker/build-push-action@v4
+      #   with:
+      #     context: gcp/
+      #     push: true
+      #     tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.sha_short.outputs.sha_short }}
+      #     cache-from: type=local,src=/tmp/.buildx-cache
+      #     cache-to: type=local,dest=/tmp/.buildx-cache
+      #     provenance: false
 
       # - name: Login to Docker
       #   run: echo $DOCKER_PASSWORD | docker login -u _json_key --password-stdin --username https://gcr.io
