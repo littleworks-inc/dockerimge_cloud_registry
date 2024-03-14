@@ -70,7 +70,9 @@ jobs:
 
       - name: Build and push Docker
         run: |
-          gcloud auth login --brief --cred-file="${{ steps.login-gcr.outputs.credentials_file_path }}"
+          mkdir -p ~/creds
+          cat $GOOGLE_CREDENTIALS > ~/creds/service_account.json
+          gcloud auth login --brief --cred-file="~/creds/service_account.json"
           cd docker_test
           docker build -t northamerica-northeast2-docker.pkg.dev/nomadic-rush-408023/gcpcli/hello:latest .
           docker image push northamerica-northeast1-docker.pkg.dev/nomadic-rush-408023/gcpcli/hello
