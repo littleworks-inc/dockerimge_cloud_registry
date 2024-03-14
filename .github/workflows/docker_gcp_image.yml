@@ -72,8 +72,8 @@ jobs:
         run: |
           gcloud auth login --brief --cred-file="${{ steps.login-gcr.outputs.credentials_file_path }}"
           cd docker_test
-          docker build -t northamerica-northeast1-docker.pkg.dev/prj-d-perso-fleroux-4094/fleroux-docker/hello:latest .
-          docker image push northamerica-northeast1-docker.pkg.dev/prj-d-perso-fleroux-4094/fleroux-docker/hello
+          docker build -t northamerica-northeast2-docker.pkg.dev/nomadic-rush-408023/gcpcli/hello:latest .
+          docker image push northamerica-northeast1-docker.pkg.dev/nomadic-rush-408023/gcpcli/hello
         shell: bash
 
       # - name: Build and push
