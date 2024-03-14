@@ -72,6 +72,7 @@ jobs:
         run: |
           mkdir -p ~/creds
           cat $GOOGLE_CREDENTIALS > ~/creds/service_account.json
+          ls -la ~/creds/
           gcloud auth login --brief --cred-file="~/creds/service_account.json"
           cd docker_test
           docker build -t northamerica-northeast2-docker.pkg.dev/nomadic-rush-408023/gcpcli/hello:latest .
