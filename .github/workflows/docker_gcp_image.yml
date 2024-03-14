@@ -5,8 +5,10 @@ on:
       - '*'
 
 env:
-    REGISTRY: northamerica-northeast2-docker.pkg.dev/nomadic-rush-408023
+    REGISTRY: northamerica-northeast2-docker.pkg.dev/nomadic-rush-408023/gcpcli
+    PROJECT_ID: nomadic-rush-408023
     IMAGE_NAME: gcpcli
+    REGION: northamerica-northeast2
     COMPARE_TAG: latest
     SHA: ${{ github.event.after }}
 jobs:
@@ -50,13 +52,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Login to GCR
-        id: login-gcr
-        uses: docker/login-action@v3
+      # - name: Login to GCR
+      #   id: login-gcr
+      #   uses: docker/login-action@v3
+      #   with:
+      #     registry: northamerica-northeast2-docker.pkg.dev
+      #     username: _json_key
+      #     password: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - id: "auth"
+        uses: "google-github-actions/auth@v1"
         with:
-          registry: northamerica-northeast2-docker.pkg.dev
-          username: _json_key
-          password: ${{ secrets.GOOGLE_CREDENTIALS }}
+          credentials_json: "${{ secrets.GOOGLE_CREDENTIALS }}"
+
 
       # - name: Set up Google Cloud authentication
       #   uses: google-github-actions/auth@v2
@@ -79,17 +87,33 @@ jobs:
       #     docker build -t northamerica-northeast2-docker.pkg.dev/nomadic-rush-408023/gcpcli/hello:latest .
       #     docker image push northamerica-northeast1-docker.pkg.dev/nomadic-rush-408023/gcpcli/hello
       #   shell: bash
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v1"
 
-      - name: Build and push
-        uses: RafikFarhad/push-to-gcr-github-action@v5-rc1
-        with:
-          gcloud_service_key: ${{ secrets.GOOGLE_CREDENTIALS }} # can be base64 encoded or plain text || not needed if you use google-github-actions/auth
-          registry: gcr.io
-          project_id: nomadic-rush-408023
-          image_name: gcpcli
-          image_tag: latest,v1
-          # dockerfile: ./docker/Dockerfile.prod
-          context: gcp/
+      - name: "Use gcloud CLI"
+        run: "gcloud info"
+
+      - name: "Docker auth"
+        run: |-
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Build image
+        run: docker build . --file DOCKERFILE_LOCATION --tag ${{ env.REGISTRY }}
+        working-directory: WORKING_DIRECTORY
+
+      - name: Push image
+        run: docker push ${{ env.REGISTRY }}
+
+      # - name: Build and push
+      #   uses: RafikFarhad/push-to-gcr-github-action@v5-rc1
+      #   with:
+      #     # gcloud_service_key: ${{ secrets.GOOGLE_CREDENTIALS }} # can be base64 encoded or plain text || not needed if you use google-github-actions/auth
+      #     registry: gcr.io
+      #     project_id: nomadic-rush-408023
+      #     image_name: gcpcli
+      #     image_tag: latest,v1
+      #     # dockerfile: ./docker/Dockerfile.prod
+      #     context: gcp/
 
       # - name: Build and push
       #   uses: docker/build-push-action@v4
