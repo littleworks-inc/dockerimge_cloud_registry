@@ -10,8 +10,7 @@ env:
     REGESTRY_name: gcpcli
     IMAGE_NAME: gcpcli
     REGION: northamerica-northeast2
-    COMPARE_TAG: latest
-    SHA: ${{ github.event.after }}
+
 jobs:
   build:
     name: GCP Build & push docker image
@@ -20,8 +19,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-            ref: ${{ env.SHA }}
 
       - name: Debug
         run: |
@@ -42,10 +39,6 @@ jobs:
         with:
           credentials_json: "${{ secrets.GOOGLE_CREDENTIALS }}"
 
-      - name: Set short sha
-        id: sha_short
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
       - name: "Set up Cloud SDK"
         uses: "google-github-actions/setup-gcloud@v1"
 
@@ -56,47 +49,17 @@ jobs:
         run: |-
           gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
-      - name: Build image
+      - name: Build Docker image
         run: docker build . --file "gcp/Dockerfile" --tag ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGESTRY_name }}/${{ env.IMAGE_NAME }}
 
-      - name: Push image
+      - name: Push Docker image
         run: docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGESTRY_name }}/${{ env.IMAGE_NAME }}
-
-      # - name: Build and push
-      #   uses: RafikFarhad/push-to-gcr-github-action@v5-rc1
-      #   with:
-      #     # gcloud_service_key: ${{ secrets.GOOGLE_CREDENTIALS }} # can be base64 encoded or plain text || not needed if you use google-github-actions/auth
-      #     registry: gcr.io
-      #     project_id: nomadic-rush-408023
-      #     image_name: gcpcli
-      #     image_tag: latest,v1
-      #     # dockerfile: ./docker/Dockerfile.prod
-      #     context: gcp/
-
-      # - name: Build and push
-      #   uses: docker/build-push-action@v4
-      #   with:
-      #     context: gcp/
-      #     push: true
-      #     tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.sha_short.outputs.sha_short }}
-      #     cache-from: type=local,src=/tmp/.buildx-cache
-      #     cache-to: type=local,dest=/tmp/.buildx-cache
-      #     provenance: false
-
-      # - name: Login to Docker
-      #   run: echo $DOCKER_PASSWORD | docker login -u _json_key --password-stdin --username https://gcr.io
-
-      # - name: Build the Docker image
-      #   run: docker build -t gcr.io/$PROJECT_ID/$IMAGE_NAME:${{ steps.sha_short.outputs.sha_short }} .
-
-      # - name: Push the Docker image to GCR
-      #   run: docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:${{ steps.sha_short.outputs.sha_short }}
 
       - name: Run Trivy vulnerability scanner
         id: docker-scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGESTRY_name }}/${{ env.IMAGE_NAME }}'
+          image-ref: '${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGESTRY_name }}/${{ env.IMAGE_NAME }}:latest'
           format: 'table'
           exit-code: '0'
           ignore-unfixed: true
