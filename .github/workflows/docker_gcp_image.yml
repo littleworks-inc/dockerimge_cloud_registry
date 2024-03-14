@@ -5,7 +5,7 @@ on:
       - '*'
 
 env:
-    REGISTRY: northamerica-northeast2-docker.pkg.dev
+    REGISTRY: northamerica-northeast2-docker.pkg.dev/nomadic-rush-408023
     IMAGE_NAME: gcpcli
     COMPARE_TAG: latest
     SHA: ${{ github.event.after }}
@@ -68,27 +68,27 @@ jobs:
         id: sha_short
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - name: Build and push Docker
-        run: |
-          mkdir -p ~/creds
-          cat $GOOGLE_CREDENTIALS > ~/creds/service_account.json
-          ls -la ~/creds/
-          cat ~/creds/service_account.json
-          gcloud auth login --brief --cred-file="~/creds/service_account.json"
-          cd docker_test
-          docker build -t northamerica-northeast2-docker.pkg.dev/nomadic-rush-408023/gcpcli/hello:latest .
-          docker image push northamerica-northeast1-docker.pkg.dev/nomadic-rush-408023/gcpcli/hello
-        shell: bash
+      # - name: Build and push Docker
+      #   run: |
+      #     mkdir -p ~/creds
+      #     cat $GOOGLE_CREDENTIALS > ~/creds/service_account.json
+      #     ls -la ~/creds/
+      #     cat ~/creds/service_account.json
+      #     gcloud auth login --brief --cred-file="~/creds/service_account.json"
+      #     cd docker_test
+      #     docker build -t northamerica-northeast2-docker.pkg.dev/nomadic-rush-408023/gcpcli/hello:latest .
+      #     docker image push northamerica-northeast1-docker.pkg.dev/nomadic-rush-408023/gcpcli/hello
+      #   shell: bash
 
-      # - name: Build and push
-      #   uses: docker/build-push-action@v4
-      #   with:
-      #     context: gcp/
-      #     push: true
-      #     tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.sha_short.outputs.sha_short }}
-      #     cache-from: type=local,src=/tmp/.buildx-cache
-      #     cache-to: type=local,dest=/tmp/.buildx-cache
-      #     provenance: false
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: gcp/
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.sha_short.outputs.sha_short }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          provenance: false
 
       # - name: Login to Docker
       #   run: echo $DOCKER_PASSWORD | docker login -u _json_key --password-stdin --username https://gcr.io
