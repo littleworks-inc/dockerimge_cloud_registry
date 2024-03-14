@@ -5,6 +5,7 @@ on:
       - '*'
 
 env:
+    REGISTRY: northamerica-northeast2-docker.pkg.dev
     IMAGE_NAME: gcpcli
     COMPARE_TAG: latest
     SHA: ${{ github.event.after }}
@@ -71,7 +72,7 @@ jobs:
         with:
           context: gcp/
           push: true
-          tags: ${{ steps.login-gcr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ steps.sha_short.outputs.sha_short }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.sha_short.outputs.sha_short }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           provenance: false
@@ -80,7 +81,7 @@ jobs:
         id: docker-scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ steps.login-gcr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ steps.sha_short.outputs.sha_short }}'
+          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.sha_short.outputs.sha_short }}'
           format: 'table'
           exit-code: '0'
           ignore-unfixed: true
