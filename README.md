@@ -101,3 +101,52 @@ Scans the Docker image for vulnerabilities using Trivy. The results are displaye
 4. Commit and push your changes to trigger the pipeline.
 
 By following this pipeline, you can automate the process of building and publishing Docker images to Google Cloud Platform securely and efficiently.
+
+# Azure Build and Publish Docker Image Pipeline
+
+This GitHub Actions pipeline automates the build and publishing of a Docker image to Azure Container Registry. The pipeline includes linting for Dockerfiles, Docker image scanning for vulnerabilities using Trivy, and pushing the built Docker image to Azure Container Registry.
+
+## Pipeline Overview
+
+The pipeline consists of the following steps:
+
+1. **Checkout**: This step checks out the source code of the repository.
+
+2. **Lint Action for Azure**: Uses Hadolint to lint the Dockerfile located in the `azure/` directory, ensuring adherence to best practices and standards.
+
+3. **Azure Credentials**: Logs into Azure Container Registry using the provided Azure credentials stored as GitHub repository secrets.
+
+4. **Build Docker Image**: Builds the Docker image using the Dockerfile located in the `azure/` directory.
+
+5. **Push Docker Image**: Pushes the built Docker image to Azure Container Registry.
+
+6. **Run Trivy Vulnerability Scanner**: Scans the pushed Docker image for vulnerabilities using Trivy, reporting any identified vulnerabilities.
+
+## Usage
+
+To use this pipeline in your repository, follow these steps:
+
+1. Ensure that you have the necessary Azure credentials (AZURE_CLIENT_ID, ARM_CLIENT_SECRET) added as GitHub repository secrets.
+
+2. Place your Dockerfile for the Azure application in the `azure/` directory of your repository.
+
+3. Customize the `IMAGE_NAME` and `container_registry` environment variables in the pipeline YAML file according to your project requirements.
+
+4. Commit the pipeline YAML file (azure-pipeline.yml) to your repository.
+
+5. Upon pushing changes to the repository, the pipeline will be triggered automatically, building and pushing the Docker image to Azure Container Registry.
+
+## Notes
+
+- Ensure that the Dockerfile in the `azure/` directory is properly configured to include all necessary dependencies and configurations for your Azure application.
+
+- Regularly review the pipeline and update the versions of actions and tools used to benefit from bug fixes and new features.
+
+- Test the pipeline in a staging environment before deploying to production to ensure proper functionality and adherence to security standards.
+
+## Resources
+
+- [GitHub Actions Documentation](https://docs.github.com/en/actions)
+- [Azure Container Registry Documentation](https://docs.microsoft.com/en-us/azure/container-registry/)
+- [Hadolint Documentation](https://github.com/hadolint/hadolint)
+- [Trivy Documentation](https://github.com/aquasecurity/trivy)

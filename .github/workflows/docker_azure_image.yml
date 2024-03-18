@@ -2,7 +2,7 @@ name: Azure Build and publish a Docker image
 on:
   push:
     branches:
-      - '*'
+      - 'azure'
 
 env:
     container_registry: devtoolhub
