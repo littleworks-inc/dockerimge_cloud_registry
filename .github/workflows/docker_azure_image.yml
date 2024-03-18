@@ -7,7 +7,6 @@ on:
 env:
     container_registry: devtoolhub
     IMAGE_NAME: azurecli
-    SHA: ${{ github.event.after }}
 
 jobs:
   build:
@@ -17,8 +16,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          ref: ${{ env.SHA }}
 
       - name: Debug
         run: |
@@ -33,10 +30,6 @@ jobs:
             no-color : false
             no-fail: true
 
-      - name: Set short sha
-        id: sha_short
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
       - name: Azure Credentials 
         uses: azure/docker-login@v1
         with:
@@ -44,10 +37,6 @@ jobs:
           username: ${{ secrets.AZURE_CLIENT_ID }}
           password: ${{ secrets.ARM_CLIENT_SECRET }}
       
-      # - name: Docker build and push 
-      #   run: |
-      #     docker build . -t contoso.azurecr.io/k8sdemo:${{ github.sha }}
-      #     docker push contoso.azurecr.io/k8sdemo:${{ github.sha }}
 
       - name: Build Docker image
         run: docker build . --file "azure/Dockerfile" --tag ${{ env.container_registry }}.azurecr.io/${{ env.IMAGE_NAME }}
