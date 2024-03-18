@@ -44,10 +44,10 @@ jobs:
           username: ${{ secrets.AZURE_CLIENT_ID }}
           password: ${{ secrets.ARM_CLIENT_SECRET }}
       
-      - name: Docker build and push 
-        run: |
-          docker build . -t contoso.azurecr.io/k8sdemo:${{ github.sha }}
-          docker push contoso.azurecr.io/k8sdemo:${{ github.sha }}
+      # - name: Docker build and push 
+      #   run: |
+      #     docker build . -t contoso.azurecr.io/k8sdemo:${{ github.sha }}
+      #     docker push contoso.azurecr.io/k8sdemo:${{ github.sha }}
 
       - name: Build Docker image
         run: docker build . --file "azure/Dockerfile" --tag ${{ env.container_registry }}.azurecr.io/${{ env.IMAGE_NAME }}
