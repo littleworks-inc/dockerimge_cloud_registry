@@ -1,0 +1,57 @@
+name: OCI Build and publish a Docker image
+on:
+  push:
+    branches:
+      - '*'
+
+env:
+    container_registry: oci_repo
+    IMAGE_NAME: ocicli
+    tenancy_namespace: yzudkakrwth9
+
+jobs:
+  build:
+    name: oci Build & push docker image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Debug
+        run: |
+          echo "github.ref -> {{ github.ref }}"
+
+      - name: lint Action for oci
+        uses: hadolint/hadolint-action@v2.0.0
+        with:
+            dockerfile: oci/Dockerfile
+            ignore: DL3018,SC2046,DL4006
+            failure-threshold: warning
+            no-color : false
+            no-fail: true
+
+      - name: oci Credentials 
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.container_registry }}.ocir.io
+          username: ${{ secrets.AZURE_CLIENT_ID }}
+          password: ${{ secrets.ARM_CLIENT_SECRET }}
+      
+
+      - name: Build Docker image
+        run: docker build . --file "azure/Dockerfile" --tag ${{ env.container_registry }}.ocir.io/${{ env.tenancy_namespace }}/${{ env.IMAGE_NAME }}
+
+      - name: Push Docker image
+        run: docker push ${{ env.container_registry }}.ocir.io/${{ env.tenancy_namespace }}/${{ env.IMAGE_NAME }}
+
+      - name: Run Trivy vulnerability scanner
+        id: docker-scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.container_registry }}.ocir.io/${{ env.tenancy_namespace }}/${{ env.IMAGE_NAME }}:latest'
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'

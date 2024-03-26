@@ -2,7 +2,6 @@
 FROM alpine:latest
 
 ENV TERRAFORM_VERSION=1.7.4
-ENV AZURE_CLI_VERSION=2.0.81
 
 # Install necessary packages: Python 3, pip, jq, git
 RUN apk --update --no-cache add \
@@ -29,7 +28,8 @@ RUN apk --update --no-cache add \
     && rm -rf /var/cache/apk/*
 
 RUN pip install --upgrade pip --break-system-packages \
-    && pip install azure-cli --break-system-packages
+    && pip install oci --break-system-packages \
+    && pip install oci-cli --break-system-packages
 
 # Add a non-root user named dockuser
 RUN addgroup -g 1000 dockuser \
