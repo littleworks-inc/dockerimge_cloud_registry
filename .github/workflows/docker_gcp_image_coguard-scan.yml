@@ -2,7 +2,7 @@ name: GCPS Build and publish a Docker image
 on:
   push:
     branches:
-      - 'gcp'
+      - '*'
 
 env:
     PROJECT_ID: nomadic-rush-408023
