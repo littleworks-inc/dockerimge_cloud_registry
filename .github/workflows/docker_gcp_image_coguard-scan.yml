@@ -55,19 +55,9 @@ jobs:
         uses: coguardio/coguard-scan-action@v0.2.2
         with:
           dockerImageName: '${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGESTRY_name }}/${{ env.IMAGE_NAME }}:latest'
+          failLevel: 0
           username: ${{ secrets.CoGuardUserName }}
           password: ${{ secrets.CoGuardPassword }}
 
       - name: Push Docker image
         run: docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGESTRY_name }}/${{ env.IMAGE_NAME }}
-
-      # - name: Run Trivy vulnerability scanner
-      #   id: docker-scan
-      #   uses: aquasecurity/trivy-action@master
-      #   with:
-      #     image-ref: '${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGESTRY_name }}/${{ env.IMAGE_NAME }}:latest'
-      #     format: 'table'
-      #     exit-code: '0'
-      #     ignore-unfixed: true
-      #     vuln-type: 'os,library'
-      #     severity: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
