@@ -55,7 +55,7 @@ jobs:
         uses: coguardio/coguard-scan-action@v0.2.2
         with:
           dockerImageName: '${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGESTRY_name }}/${{ env.IMAGE_NAME }}:latest'
-          failLevel: 0
+          failLevel: 6
           username: ${{ secrets.CoGuardUserName }}
           password: ${{ secrets.CoGuardPassword }}
 
