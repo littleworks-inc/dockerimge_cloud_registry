@@ -150,3 +150,59 @@ To use this pipeline in your repository, follow these steps:
 - [Azure Container Registry Documentation](https://docs.microsoft.com/en-us/azure/container-registry/)
 - [Hadolint Documentation](https://github.com/hadolint/hadolint)
 - [Trivy Documentation](https://github.com/aquasecurity/trivy)
+
+
+## GitHub Actions Pipeline for Docker Image Deployment with CoGuard Integration
+
+This GitHub Actions pipeline automates the build, linting, and deployment process for a Docker image named `gcpcli` to Google Cloud Platform's Container Registry. The pipeline also integrates CoGuard.io for scanning the Docker image for vulnerabilities.
+
+### Pipeline Structure
+
+The pipeline consists of the following stages:
+
+1. **Checkout**: Fetches the repository code.
+2. **Debug**: Prints the GitHub reference.
+3. **Linting**: Uses Hadolint to lint the Dockerfile.
+4. **Authentication**: Authenticates with Google Cloud.
+5. **Cloud SDK Setup**: Sets up the Google Cloud SDK.
+6. **Docker Authentication**: Configures Docker authentication for Google Container Registry.
+7. **Build Docker Image**: Builds the Docker image using the specified Dockerfile.
+8. **Push Docker Image**: Pushes the built Docker image to Google Container Registry.
+9. **CoGuard Scan**: Scans the Docker image for vulnerabilities using CoGuard.io.
+
+### CoGuard CLI Action Explanation
+
+The `CoGuard Scan` step in the pipeline utilizes the `coguardio/coguard-scan-action@v0.2.2` GitHub Action to scan the Docker image for vulnerabilities using CoGuard.io. CoGuard is a static analysis tool for configuration files that helps developers and infrastructure teams reduce false positives and find actionable fixes for cloud infrastructure and application configurations before and after provisioning.
+
+#### CoGuard's Features
+
+- **IaC, Container, and Application Configuration Scanning**: CoGuard scans configuration files in your code repository, including Terraform, Kubernetes YAML, Dockerfile, and other configuration files. It also connects to your cloud provider and extracts your configurations.
+  
+- **Automating Compliance**: CoGuard can be added to your CI/CD pipeline, allowing for continual compliance testing and monitoring. It supports a wide range of compliance frameworks and can provide ongoing reporting.
+  
+- **Remediation with or without Automation**: CoGuard provides auto-remediation tools that can create a pull-request and fit in the code review process. It also provides manual remediation steps for configuration switches across containers and applications.
+  
+- **Reduce CVE False Positives**: CoGuard is built to focus on actionable configuration changes, not CVE noise. It uses a predicate logic engine to add new technologies or new rulesets that are independent of the configuration of environments.
+  
+- **Fast and Extensible**: CoGuard is built from the ground up to be extensible, and its predicate logic engine allows teams to extend the policies and configuration rules supported quickly.
+  
+- **Supported Technologies**: CoGuard supports a wide range of technologies, including public cloud providers, infrastructure as code (IaC), and containerization technologies. It also supports databases, serverless technologies, and more.
+  
+- **Dashboard and Reporting**: CoGuard provides a dashboard that displays all reports, including history and trends. It also provides remediation steps and allows teams to view their full infrastructure and access additional features.
+
+CoGuard offers a free Developer Tier that supports common IaC and AMP technology stacks. It also offers a paid tier with additional features, including auto-remediation and access to the full infrastructure.
+
+By integrating CoGuard.io into the pipeline, the company ensures that the Docker images deployed to production are secure and free from known vulnerabilities, enhancing the overall security posture of the applications running in the containerized environment.
+
+### Usage
+
+To use this pipeline, follow these steps:
+
+1. Ensure you have the necessary secrets set up in your GitHub repository:
+    - `GOOGLE_CREDENTIALS`: Google Cloud service account credentials.
+    - `CoGuardUserName`: CoGuard username for authentication.
+    - `CoGuardPassword`: CoGuard password for authentication.
+
+2. Modify the pipeline code in `.github/workflows/main.yml` to suit your specific requirements, such as changing the Docker image name, Google Cloud project ID, or other environment variables.
+
+3. Push your changes to the repository. The GitHub Actions pipeline will be triggered automatically on push events to build, lint, and deploy the Docker image, as well as scan it for vulnerabilities using CoGuard.io.
