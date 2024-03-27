@@ -64,5 +64,6 @@ jobs:
       
       - name: Push Docker image
         run: |
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
           docker build . --file "gcp/Dockerfile" --tag ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGESTRY_name }}/${{ env.IMAGE_NAME }}
           docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGESTRY_name }}/${{ env.IMAGE_NAME }}
