@@ -51,8 +51,8 @@ jobs:
       - name: Build Docker image
         run: docker build . --file "gcp/Dockerfile" --tag ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGESTRY_name }}/${{ env.IMAGE_NAME }}
 
-      - name: Push Docker image
-        run: docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGESTRY_name }}/${{ env.IMAGE_NAME }}
+      # - name: Push Docker image
+      #   run: docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGESTRY_name }}/${{ env.IMAGE_NAME }}
 
       - name: Run the CoGuard CLI Action
         uses: coguardio/coguard-scan-action@v0.2.2
@@ -61,5 +61,8 @@ jobs:
           failLevel: 6
           username: ${{ secrets.CoGuardUserName }}
           password: ${{ secrets.CoGuardPassword }}
-
       
+      - name: Push Docker image
+        run: |
+          docker build . --file "gcp/Dockerfile" --tag ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGESTRY_name }}/${{ env.IMAGE_NAME }}
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGESTRY_name }}/${{ env.IMAGE_NAME }}
