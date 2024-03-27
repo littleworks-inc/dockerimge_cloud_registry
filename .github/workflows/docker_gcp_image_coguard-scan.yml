@@ -59,6 +59,7 @@ jobs:
         with:
           dockerImageName: '${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGESTRY_name }}/${{ env.IMAGE_NAME }}:latest'
           failLevel: 6
+          repositoryScan: true
           username: ${{ secrets.CoGuardUserName }}
           password: ${{ secrets.CoGuardPassword }}
       
